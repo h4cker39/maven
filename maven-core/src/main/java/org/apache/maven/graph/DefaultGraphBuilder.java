@@ -155,7 +155,7 @@ public class DefaultGraphBuilder
         {
             File reactorDirectory = getReactorDirectory( request );
 
-            Collection<MavenProject> selectedProjects = new LinkedHashSet<>( request.getSelectedProjects().size(), 1 );
+            Collection<MavenProject> selectedProjects = new LinkedHashSet<>();
 
             for ( String selector : request.getSelectedProjects() )
             {
@@ -165,6 +165,12 @@ public class DefaultGraphBuilder
                         .orElseThrow( () -> new MavenExecutionException(
                                 "Could not find the selected project in the reactor: " + selector, request.getPom() ) );
                 selectedProjects.add( selectedProject );
+
+                List<MavenProject> children = selectedProject.getCollectedProjects();
+                if ( children != null )
+                {
+                    selectedProjects.addAll( children );
+                }
             }
 
             result = new ArrayList<>( selectedProjects );
